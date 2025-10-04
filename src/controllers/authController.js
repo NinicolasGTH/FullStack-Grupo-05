@@ -55,6 +55,29 @@ async function login(req,res){
 
 export { login };
 
+// Promote user to admin (DEV ONLY) - requires header or body secret
+export async function promoteToAdmin(req, res){
+    try {
+        const devSecret = process.env.DEV_ADMIN_SECRET;
+        const provided = req.body.secret || req.headers['x-dev-secret'];
+        if(!devSecret || !provided || provided !== devSecret){
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+        const { email } = req.body;
+        if(!email){
+            return res.status(400).json({ error: 'Email é obrigatório.' });
+        }
+        const user = await User.findOneAndUpdate({ email }, { role: 'admin' }, { new: true });
+        if(!user){
+            return res.status(404).json({ error: 'Usuário não encontrado.' });
+        }
+        res.json({ message: 'Usuário promovido a admin.', user: { id: user._id, email: user.email, role: user.role }});
+    } catch (err){
+        console.error(err);
+        res.status(500).json({ error: 'Erro ao promover usuário.' });
+    }
+}
+
 async function profile(req, res){
     try{
         // req.user vem do middleware galera do front-end
