@@ -10,11 +10,11 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         match: [/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/, 'Formato de email inválido']
     },
-    password: {
-        type: String,
-        required: true,
-        minlength: [6, 'A senha deve ter pelo menos 6 caracteres']
-    },
+        passwordHash: {
+            type: String,
+            required: true,
+            minlength: [6, 'A senha deve ter pelo menos 6 caracteres']
+        },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
     wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Game' }]
 }, { timestamps: true });
