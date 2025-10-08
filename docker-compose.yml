@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  # Serviço da sua API Node.js
+  api:
+    build: .
+    container_name: my_app_api
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "6000:6000" # Mapeia a porta 3000 do host para a 3000 do container
+    volumes:
+      # Monta o código-fonte para live-reload durante o desenvolvimento
+      - ./src:/usr/src/app/src
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+  # Serviço do Banco de Dados (PostgreSQL)
+  db:
+    image: postgres:15-alpine
+    container_name: my_app_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432" # Expõe a porta do Postgres para o seu computador (opcional)
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+# Define as redes e volumes
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db-data:
+    driver: local
