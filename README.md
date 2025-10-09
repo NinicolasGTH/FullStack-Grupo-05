@@ -24,7 +24,31 @@ API REST para catálogo de jogos, autenticação de usuários, wishlist e docume
    ```bash
    npm start
    ```
-4. Acesse a documentação Swagger em [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
+
+## Como rodar o projeto com docker
+
+1. Instale o app:
+   ```
+   instale o Docker Desktop
+   ```
+2. Abra o Docker:
+   ```
+   o app Docker Desktop tem que estar aberto antes de rodar o docker na api
+   ```
+3. Inicie o docker via terminal:
+   ```bash
+   docker-compose up --build
+   ```
+4. Para encerrar o docker:
+   ```
+   clique "Ctrl + C"
+   ```
+   ou, se estiver em modo detached:
+   ```bash
+   docker-compose down
+   ```
+
+Acesse a documentação Swagger em [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
 
 ## Principais Endpoints
 
