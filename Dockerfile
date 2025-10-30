@@ -23,8 +23,8 @@ COPY --from=base /usr/src/app/node_modules ./node_modules
 # Copia o código-fonte da aplicação
 COPY . .
 
-# Expõe a porta que sua aplicação usa (ajuste se for diferente de 3000)
-EXPOSE 6000
+# Expõe a porta que sua aplicação usa
+EXPOSE 5000
 
 # Comando para iniciar a aplicação
 CMD [ "node", "server.js" ]

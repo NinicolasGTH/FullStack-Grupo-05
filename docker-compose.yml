@@ -1,35 +1,33 @@
 version: '3.8'
 
 services:
-  # Serviço da sua API Node.js
+  # Serviço da API Node.js
   api:
     build: .
     container_name: my_app_api
     restart: unless-stopped
     env_file: .env
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/gamesdb
+      - PORT=5000
     ports:
-      - "6000:6000" # Mapeia a porta 3000 do host para a 3000 do container
-    volumes:
-      # Monta o código-fonte para live-reload durante o desenvolvimento
-      - ./src:/usr/src/app/src
+      - "6000:5000" # Host:Container — API exposta na 6000 no host
+    # volumes:
+    #   - ./src:/usr/src/app/src  # opcional para desenvolvimento
     networks:
       - app-network
     depends_on:
-      - db
+      - mongo
 
-  # Serviço do Banco de Dados (PostgreSQL)
-  db:
-    image: postgres:15-alpine
-    container_name: my_app_db
+  # Serviço do Banco de Dados (MongoDB)
+  mongo:
+    image: mongo:6
+    container_name: my_app_mongo
     restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
     ports:
-      - "5432:5432" # Expõe a porta do Postgres para o seu computador (opcional)
+      - "27017:27017"
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - mongo-data:/data/db
     networks:
       - app-network
 
@@ -39,5 +37,5 @@ networks:
     driver: bridge
 
 volumes:
-  db-data:
+  mongo-data:
     driver: local
