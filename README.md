@@ -37,6 +37,26 @@ Público-alvo: turma e avaliadores da disciplina, além de qualquer pessoa inter
    npm start
    ```
 
+   ## Frontend (Next.js)
+
+   O frontend em Next.js está na pasta `next/` e consome esta API.
+
+   1. Copie `next/.env.local.example` para `next/.env.local` e ajuste `NEXT_PUBLIC_API_URL` para a URL da API (ex.: `http://localhost:5000`).
+   2. Instale as dependências do frontend:
+      ```powershell
+      cd next; npm install
+      ```
+   3. Rode o servidor de desenvolvimento do Next:
+      ```powershell
+      npm run dev
+      ```
+   4. Acesse o frontend em http://localhost:3000.
+
+   Notas:
+   - A documentação da API continua em http://localhost:5000/api-docs (ou 6000 se estiver usando Docker conforme abaixo).
+   - O Socket.IO no backend já está configurado para aceitar origem `http://localhost:3000`.
+   - Faça login no front; para ver telas de admin, promova um usuário via endpoint apropriado e refaça login.
+
 ## Como rodar o projeto com Docker
 
 1. Instale o app:

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { fetchGames } from '../services/games.js'
 import GameCard from '../ui/GameCard.jsx'
+import {Link} from 'react-router-dom';
+import { useAuth } from '../context/AuthContext.jsx';
 
 export default function Games(){
   const [q, setQ] = useState('')
@@ -8,6 +10,10 @@ export default function Games(){
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [data, setData] = useState({ data: [], meta: { total: 0, page: 1, pages: 1 }})
+  const {user} = useAuth();
+
+
+
 
   async function load(){
     setLoading(true); setError('')
@@ -24,6 +30,15 @@ export default function Games(){
 
   return (
     <section>
+      {/* Header da página com ação exclusiva para admins */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-2xl font-bold">🎮 Jogos</h2>
+        {user?.role === 'admin' && (
+          <Link className="btn btn-primary" to="/admin/games/new">
+            + Adicionar Jogo
+          </Link>
+        )}
+      </div>
       <form onSubmit={onSearch} className="mb-4 flex gap-2">
         <input className="input input-bordered w-full" placeholder="Buscar por título" value={q} onChange={(e)=>setQ(e.target.value)} />
         <button className="btn btn-primary">Buscar</button>
@@ -44,5 +59,9 @@ export default function Games(){
         </>
       )}
     </section>
+
+    
+
+    
   )
 }
