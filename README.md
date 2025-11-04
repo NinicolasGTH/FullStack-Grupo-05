@@ -59,50 +59,32 @@ Público-alvo: turma e avaliadores da disciplina, além de qualquer pessoa inter
 
 ## Como rodar o projeto com Docker
 
-1. Instale o app:
-   ```
-   instale o Docker Desktop
-   ```
-2. Abra o Docker:
-   ```
-   o app Docker Desktop tem que estar aberto antes de rodar o docker na api
-   ```
-3. Inicie os serviços via terminal (modo detached recomendado):
-    ```powershell
-    docker compose up --build -d
-    # ou (CLI legada)
-    docker-compose up --build -d
-    ```
-4. Para encerrar o docker:
-    ```powershell
-    docker compose down
-    # ou
-    docker-compose down
-    ```
+1) Pré-requisito
+- Instale o Docker Desktop e deixe-o aberto.
+
+2) Subir API + MongoDB com Docker Compose
+```powershell
+docker compose up --build -d
+# ou (CLI legada)
+docker-compose up --build -d
+```
+
+3) Parar serviços
+```powershell
+docker compose down
+# ou
+docker-compose down
+```
 
 Observações importantes:
-- O `docker-compose.yml` atual mapeia a porta `6000:6000` para a API. Portanto, ao rodar com Docker, acesse: http://localhost:6000/api-docs
-- Se rodar localmente (sem Docker), a porta padrão é 5000: http://localhost:5000/api-docs
-- O compose inclui um serviço `db` com Postgres por padrão, mas esta API usa MongoDB. Você pode:
-   - a) Usar uma instância externa de MongoDB (ex.: MongoDB Atlas) e definir `MONGO_URI` no `.env`;
-   - b) Adaptar o compose para incluir MongoDB. Exemplo mínimo:
-      ```yaml
-      services:
-         mongo:
-            image: mongo:6
-            restart: unless-stopped
-            ports:
-               - "27017:27017"
-            volumes:
-               - mongo-data:/data/db
-      volumes:
-         mongo-data:
-      ```
-      E então, no `.env` da API (ou env do container), ajustar: `MONGO_URI=mongodb://mongo:27017/seu_banco`.
+- O `docker-compose.yml` deste repo sobe dois serviços: `api` (Node/Express) e `mongo` (MongoDB 6).
+- O mapeamento da API é `6000:5000` (host:container). Com Docker, acesse: http://localhost:6000/api-docs
+- Sem Docker (local), a API fica por padrão em http://localhost:5000/api-docs
+- A variável `MONGO_URI` já está definida no compose para apontar para o serviço `mongo` (`mongodb://mongo:27017/gamesdb`). Não é necessário ter Mongo instalado localmente para usar o compose.
 
-Acesse a documentação Swagger em [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
-
-Quando em Docker (porta 6000): [http://localhost:6000/api-docs](http://localhost:6000/api-docs)
+Acesse a documentação Swagger:
+- Local (sem Docker): [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
+- Com Docker (porta 6000): [http://localhost:6000/api-docs](http://localhost:6000/api-docs)
 
 ## Principais Endpoints
 
