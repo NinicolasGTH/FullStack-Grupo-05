@@ -3,6 +3,7 @@ import { fetchGames } from '../services/games.js'
 import GameCard from '../ui/GameCard.jsx'
 import {Link} from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { getWishlist } from '../services/wishlist.js'
 
 export default function Games(){
   const [q, setQ] = useState('')
@@ -11,9 +12,7 @@ export default function Games(){
   const [error, setError] = useState('')
   const [data, setData] = useState({ data: [], meta: { total: 0, page: 1, pages: 1 }})
   const {user} = useAuth();
-
-
-
+  const [wishSet, setWishSet] = useState(new Set())
 
   async function load(){
     setLoading(true); setError('')
@@ -25,6 +24,21 @@ export default function Games(){
   }
 
   useEffect(()=>{ load() }, [page])
+
+  // Load wishlist when user logs in/out
+  useEffect(() => {
+    let cancelled = false
+    async function loadWishlist(){
+      try{
+        if(!user){ setWishSet(new Set()); return }
+        const res = await getWishlist()
+        const ids = new Set((res?.wishlist || []).map(g => String(g._id || g.id)))
+        if(!cancelled) setWishSet(ids)
+      }catch{ /* ignore */ }
+    }
+    loadWishlist()
+    return () => { cancelled = true }
+  }, [user])
 
   function onSearch(e){ e.preventDefault(); setPage(1); load() }
 
@@ -49,7 +63,24 @@ export default function Games(){
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {data.data.map(game => <GameCard key={game._id || game.id} game={game} />)}
+            {data.data.map(game => {
+              const id = String(game._id || game.id)
+              const isWish = wishSet.has(id)
+              return (
+                <GameCard
+                  key={id}
+                  game={game}
+                  isWishlisted={isWish}
+                  onWishlistChange={(next) => {
+                    setWishSet(prev => {
+                      const s = new Set(prev)
+                      if(next) s.add(id); else s.delete(id)
+                      return s
+                    })
+                  }}
+                />
+              )
+            })}
           </div>
           <div className="join justify-center mt-6 w-full flex">
             <button className="join-item btn" onClick={()=> setPage(p=> Math.max(1, p-1))} disabled={page<=1}>«</button>
@@ -60,7 +91,7 @@ export default function Games(){
       )}
     </section>
 
-    
+
 
     
   )

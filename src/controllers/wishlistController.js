@@ -14,16 +14,16 @@ export async function addToWishlist(req, res){
 
         // adiciona o jogo caso ele não esteja na wishlist
         const user = await User.findById(userId);
-        if(user.wishlist.includes(gameId)){
-            return res.status(400).json({message: "O jogo já está na lista de desejos."});
-
+        const already = user.wishlist.some(id => id.toString() === gameId)
+        if(already){
+            return res.json({message: "O jogo já está na lista de desejos.", inWishlist: true, changed: false});
         }
         user.wishlist.push(gameId);
         await user.save();
-        res.json({message: "Jogo adicionado a lista de desejos"});
+        res.json({message: "Jogo adicionado à lista de desejos.", inWishlist: true, changed: true});
 
     } catch (err){
-        res.status(500).json({error: "Erro ao adicionar jogo a lista de desejos."});
+        res.status(500).json({error: "Erro ao adicionar jogo à lista de desejos."});
     }
 }
 
@@ -35,9 +35,10 @@ export async function removeFromWishlist(req, res){
         const gameId = req.params.gameId;
 
         const user = await User.findById(userId);
+        const had = user.wishlist.some(id => id.toString() === gameId)
         user.wishlist = user.wishlist.filter(id => id.toString() !== gameId);
         await user.save();
-        res.json({message: "Jogo removido da lista de desejos."});
+        res.json({message: had ? "Jogo removido da lista de desejos." : "O jogo não estava na lista de desejos.", inWishlist: false, changed: had});
 
     } catch (err){
         res.status(500).json({error: "Erro ao remover jogo da lista de desejos."});

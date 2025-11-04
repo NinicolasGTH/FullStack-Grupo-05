@@ -15,6 +15,8 @@ export default function GamesPage(){
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [confirmId, setConfirmId] = useState(null);
+  const [wishSet, setWishSet] = useState(new Set());
+  const [pendingId, setPendingId] = useState(null);
 
   async function load(){
     setLoading(true); setError('');
@@ -26,6 +28,21 @@ export default function GamesPage(){
   }
 
   useEffect(()=>{ load(); }, [page]);
+
+  // Load wishlist of current user to reflect button state
+  useEffect(() => {
+    let cancelled = false;
+    async function loadWishlist(){
+      try{
+        if(!user){ setWishSet(new Set()); return; }
+        const res = await apiGet('/wishlist');
+        const ids = new Set((res?.wishlist || []).map(g => String(g._id || g.id)));
+        if(!cancelled) setWishSet(ids);
+      } catch { /* ignore */ }
+    }
+    loadWishlist();
+    return () => { cancelled = true; };
+  }, [user]);
 
   function onSearch(e){ e.preventDefault(); setPage(1); load(); }
 
@@ -66,35 +83,53 @@ export default function GamesPage(){
             {data.data.length === 0 && (
               <div className="col-span-full card p-6 text-center opacity-80">Nenhum jogo encontrado.</div>
             )}
-            {data.data.map(g => (
-              <div key={g._id} className="card overflow-hidden flex flex-col">
-                <img src={g.coverUrl} alt={g.title} className="w-full h-40 object-cover" />
-                <div className="p-3 space-y-1 flex-1">
-                  <div className="font-bold">{g.title}</div>
-                  <div className="text-xs opacity-70">{new Date(g.releaseDate).toLocaleDateString()}</div>
-                </div>
-                <div className="p-3 flex gap-2">
-                  {user && (
-                    <button
-                      className="btn flex-1"
-                      onClick={async ()=>{
-                        try{ await apiPost(`/wishlist/${g._id}`); toast('Adicionado à wishlist', 'success'); }
-                        catch(e){ toast(e.message || 'Erro ao adicionar', 'error'); }
-                      }}
-                    >❤️ Wishlist</button>
-                  )}
-                  {user?.role === 'admin' && (
-                    <>
-                      <Link className="btn flex-1" href={`/games/${g._id}/edit`}>✏️ Editar</Link>
+            {data.data.map(g => {
+              const id = String(g._id || g.id);
+              const isWish = wishSet.has(id);
+              return (
+                <div key={id} className="card overflow-hidden flex flex-col">
+                  <img src={g.coverUrl} alt={g.title} className="w-full h-40 object-cover" />
+                  <div className="p-3 space-y-1 flex-1">
+                    <div className="font-bold">{g.title}</div>
+                    <div className="text-xs opacity-70">{new Date(g.releaseDate).toLocaleDateString()}</div>
+                  </div>
+                  <div className="p-3 flex gap-2">
+                    {user && (
                       <button
-                        className="btn flex-1"
-                        onClick={()=> setConfirmId(g._id)}
-                      >🗑️ Excluir</button>
-                    </>
-                  )}
+                        className={`btn flex-1 ${isWish ? 'btn-error' : ''}`}
+                        disabled={pendingId === id}
+                        onClick={async ()=>{
+                          if(pendingId) return;
+                          setPendingId(id);
+                          try{
+                            if(isWish){
+                              await apiDel(`/wishlist/${id}`);
+                              setWishSet(prev => { const s = new Set(prev); s.delete(id); return s; });
+                              toast('Removido da wishlist', 'success');
+                            } else {
+                              await apiPost(`/wishlist/${id}`);
+                              setWishSet(prev => { const s = new Set(prev); s.add(id); return s; });
+                              toast('Adicionado à wishlist', 'success');
+                            }
+                          } catch(e){
+                            toast(e.message || 'Erro ao atualizar wishlist', 'error');
+                          } finally { setPendingId(null); }
+                        }}
+                      >{pendingId === id ? '...' : (isWish ? '💔 Remover' : '❤️ Wishlist')}</button>
+                    )}
+                    {user?.role === 'admin' && (
+                      <>
+                        <Link className="btn flex-1" href={`/games/${id}/edit`}>✏️ Editar</Link>
+                        <button
+                          className="btn flex-1"
+                          onClick={()=> setConfirmId(id)}
+                        >🗑️ Excluir</button>
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <div className="flex gap-2 justify-center mt-6">
             <button className="btn" onClick={()=> setPage(p=> Math.max(1, p-1))} disabled={page<=1}>«</button>
