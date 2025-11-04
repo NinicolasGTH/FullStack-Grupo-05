@@ -9,7 +9,7 @@ export default function Navbar(){
       <div className="max-w-6xl mx-auto p-3 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/" className="font-display text-xl text-transparent bg-clip-text bg-gradient-to-r from-[var(--cp-cyan)] via-[var(--cp-yellow)] to-[var(--cp-magenta)] drop-shadow">
-            <span className="glitch" data-text="NeonLab">NeonLab</span>
+            <span className="glitch" data-text="Cybernet">Cybernet</span>
           </Link>
           <Link className="hover:underline opacity-90 hover:opacity-100" href="/games">Jogos</Link>
           <Link className="hover:underline opacity-90 hover:opacity-100" href="/chat">Chat</Link>

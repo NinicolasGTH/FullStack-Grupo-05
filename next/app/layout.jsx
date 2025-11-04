@@ -4,7 +4,7 @@ import { AuthProvider } from '../context/AuthContext';
 import { ToastProvider } from '../context/ToastContext';
 
 export const metadata = {
-  title: 'FullStack - Next Front',
+  title: 'Cybernet - Plataforma de Jogos',
   description: 'Frontend Next.js consumindo API Node/Express',
 };
 
