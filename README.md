@@ -130,6 +130,8 @@ Quando em Docker (porta 6000): [http://localhost:6000/api-docs](http://localhost
 - `docs`: mudanças em documentação
 - `chore`: tarefas de manutenção/configuração
 
+> Observação: mantenha mensagens de commit claras e descritivas, citando o escopo (ex.: `feat(games): adicionar paginação na listagem`). Isso atende ao requisito de commits bem descritos.
+
 
 
 

@@ -40,3 +40,9 @@ Frontend em Next.js consumindo a sua API existente (Node/Express).
 - Defina `NEXT_PUBLIC_API_URL` apontando para a API (ex.: `http://localhost:5000`).
 - O backend deve estar rodando antes do front.
 - Caso promova um usuário a admin pela API, faça logout/login no front para aplicar a permissão.
+
+## Integrantes do grupo
+- [Preencha aqui o nome completo do Integrante 1]
+- [Preencha aqui o nome completo do Integrante 2]
+- [Preencha aqui o nome completo do Integrante 3]
+- [Preencha aqui o nome completo do Integrante 4]
